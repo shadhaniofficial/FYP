@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <meta charset="UTF-8">
+    <title>Paragraph Retrieval System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: -10px;
+        }
+        .form-control, .btn {
+            border-radius: 30px;
+        }
+        .section-title {
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .input-group-text {
+            border-radius: 30px;
+        }
+
+        /* Navbar styling */
+        .navbar {
+            border-bottom: 2px solid #ccc;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .voice-command-btn {
+                position: fixed;
+                bottom: 25px;
+                right: 20px;
+                width: 45px;
+                height: 45px;
+                border-radius: 50%;
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .voice-command-btn i {
+                font-size: 24px;
+            }
+
+            .form-button {
+                width: 50%;
+                float: left;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Mobile Navbar with Drawer -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <strong class="navbar-brand" href="#">Brainly Assistant</strong>
+            <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Menu</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="javascript:void(0);" onclick="window.location.reload();">Refresh</a>
+                        </li>                        
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">For Future Updates</a>
+                        </li>
+                        <li style="display: none;" class="nav-item">
+                            <a class="nav-link" href="#">Fetch Data</a>
+                        </li>
+                        <li style="display: none;" class="nav-item">
+                            <a class="nav-link" href="#">Translate Content</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+
+    <div class="container">
+        <!-- File Upload Section -->
+        <form class="mb-4" method="post" action="/upload" enctype="multipart/form-data">
+            <label for="formFile" class="form-label section-title">Upload Document</label>
+            <div class="input-group">
+                <span class="input-group-text" id="file-addon"><i class="bi bi-paperclip"></i></span>
+                <input class="form-control" type="file" id="formFile" name="file" accept=".docx" required>
+            </div>
+            
+            <label class="section-title mt-3">Chapter Details</label>
+            <input class="form-control mb-2" type="text" id="chapter_name" name="chapter_name" placeholder="Chapter Name" required>
+            <input class="form-control mb-2" type="number" id="chapter_no" name="chapter_no" placeholder="Chapter Number" required>
+            
+            <button type="submit" class="btn btn-primary form-button mt-3">Upload</button>
+        </form>
+        <br></br>        
+
+        <!-- Fetch Paragraph -->
+        <form class="mb-4" action="{{ url_for('fetch_data') }}" method="get">
+            <button type="submit" class="btn btn-primary form-button mt-3">Fetch Paragraph Data</button>
+        </form>
+        <br></br>
+        <!-- Search for Paragraph Section -->
+        <form class="mb-4" method="post" action="/search">
+            <label class="section-title">Search for Paragraphs</label>
+            <input type="text" class="form-control" id="keyword" name="keyword" placeholder="Enter keyword" required>
+            <button type="submit" class="btn btn-primary form-button mt-3">Search</button>
+        </form>
+        <br></br>
+        <!-- Retrieve Paragraph Section -->
+        <form class="mb-4" method="post" action="/retrieve">
+            <label class="section-title">Retrieve Paragraph</label>
+            <input class="form-control mb-2" type="number" id="page_no" name="page_no" placeholder="Page Number" required>
+            <input class="form-control" type="number" id="paragraph_no" name="paragraph_no" placeholder="Paragraph Number" required>
+            <button type="submit" class="btn btn-primary form-button mt-3">Retrieve</button>
+        </form>
+        <br></br>
+        <!-- Count Word Occurrences Section -->
+        <form class="mb-4" method="post" action="/word-count">
+            <label class="section-title">Count Word Occurrences</label>
+            <input class="form-control" type="text" id="word_to_find" name="word_to_find" placeholder="Enter word to count" required>
+            <button type="submit" class="btn btn-primary form-button mt-3">Count Word</button>
+        </form>
+        <br></br>
+        <!-- Translate Content Section -->
+        <form class="mb-4" method="post" action="/trans" enctype="multipart/form-data">
+            <label class="section-title">Translate Content</label>
+            <div class="topics">
+                {% for topic in topics %}
+                <input type="checkbox" class="form-control" name="topics" value="{{ topic }}">{{ topic }}<br>
+                {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-primary form-button mt-3" >Translate</button>
+        </form>
+
+        <br></br>
+        <form action="/truncate" method="post">
+            <button class="btn btn-primary form-button mt-3" type="submit" style="margin-bottom: 10%;">Truncate DB</button>
+        </form> 
+    
+        <button class="btn btn-primary voice-command-btn" onclick="startVoiceCommands()">🎤</button>    
+
+    </div>
+    <script>
+        function startVoiceCommands() {
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript.toLowerCase();
+                console.log("Recognized text:", transcript);
+                handleCommand(transcript);
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Recognition error:', event.error);
+                alert("Error occurred during speech recognition.");
+            };
+
+            recognition.start();
+        }
+
+        function handleCommand(command) {
+            if (command.includes('search for')) {
+                const keyword = command.split('search for')[1].trim();
+                document.getElementById('keyword').value = keyword;
+                document.querySelector('form[action="/search"]').submit();
+            }
+            else if (command.includes('get para') && command.includes('from page')) {
+                const para = command.match(/para\s*(\d+)/i);
+                const page = command.match(/page\s*(\d+)/i);
+                if (para && page) {
+                    document.getElementById('paragraph_no').value = para[1];
+                    document.getElementById('page_no').value = page[1];
+                    document.querySelector('form[action="/retrieve"]').submit();
+                }
+            }
+            else if (command.includes('count word')) {
+                const word = command.split('count word')[1].trim();
+                document.getElementById('word_to_find').value = word;
+                document.querySelector('form[action="/word-count"]').submit();
+            }
+            else if (command.includes('translate')) {
+                const topics = document.querySelectorAll('.topics input[type="checkbox"]');
+                topics.forEach((topic) => {
+                    if (command.includes(topic.value.toLowerCase())) {
+                        topic.checked = true;
+                    }
+                });
+                document.querySelector('form[action="/trans"]').submit();
+            } else {
+                alert("Command not recognized. Please try again.");
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Count Result</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+            margin: 0; /* Remove default margin */
+            padding: 20px; /* Add padding to the body */
+            box-sizing: border-box; /* Ensure padding doesn't affect overall width */
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2rem; /* Increase font size for better visibility */
+            text-align: center; /* Center align heading */
+        }
+        p {
+            font-size: 1.2rem; /* Responsive font size */
+            color: #333;
+            text-align: center; /* Center align paragraph */
+            max-width: 600px; /* Limit width for better readability */
+        }
+        a {
+            text-decoration: none;
+            padding: 10px 15px;
+            color: white;
+            background-color: blue;
+            border-radius: 4px;
+            margin-top: 20px; /* Add margin above the link */
+            transition: background-color 0.3s; /* Smooth transition for hover effect */
+        }
+        a:hover {
+            background-color: darkblue;
+        }
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.5rem; /* Adjust font size for smaller screens */
+            }
+            p {
+                font-size: 1rem; /* Adjust paragraph font size */
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Word Count Result</h1>
+    <p>The word "<strong>{{ word }}</strong>" appears <strong>{{ count }}</strong> times in the document.</p>
+    
+    <a href="/">Go Back</a>
+</body>
+</html>
